@@ -1,12 +1,12 @@
 # app.py
 import streamlit as st
 from datetime import datetime
-import time
+from streamlit_autorefresh import st_autorefresh
 
 # ① ページ設定
 st.set_page_config(page_title="Simple Clock", layout="wide")
 
-# ② Streamlit デフォルトのヘッダー・フッターを非表示に
+# ② UI をすっきり隠す
 st.markdown(
     """
     <style>
@@ -18,16 +18,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ③ fullscreen フラグの初期化
+# ③ 全画面モード管理
 if "fullscreen" not in st.session_state:
     st.session_state.fullscreen = False
 
-# ④ 全画面ボタン（押されていなければ表示）
 if not st.session_state.fullscreen:
     if st.button("Fullscreen"):
         st.session_state.fullscreen = True
 
-# ⑤ 全画面表示のトリガー
 if st.session_state.fullscreen:
     st.markdown(
         """
@@ -38,7 +36,10 @@ if st.session_state.fullscreen:
         unsafe_allow_html=True,
     )
 
-# ⑥ デジタル時計の描画
+# ④ 1分ごとに自動リフレッシュ
+_ = st_autorefresh(interval=60_000, key="clock_refresh")
+
+# ⑤ デジタル時計を右端に表示
 now = datetime.now().strftime("%H:%M")
 st.markdown(
     f"""
@@ -57,7 +58,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-# ⑦ 1分ごとに更新して再実行
-time.sleep(60)
-st.experimental_rerun()
