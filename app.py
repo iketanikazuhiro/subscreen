@@ -1,20 +1,17 @@
 # app.py
 import streamlit as st
 from datetime import datetime
-from streamlit_autorefresh import st_autorefresh
 
 # ① ページ設定
 st.set_page_config(page_title="Simple Clock", layout="wide")
 
-# ② Streamlit のデフォルト UI を隠しつつ、背景色を薄いグレーに
+# ② デフォルト UI を隠し、背景を薄グレーに
 st.markdown(
     """
     <style>
-      /* メニューやフッターなどを非表示 */
       #MainMenu {visibility: hidden;}
       footer {visibility: hidden;}
       header {visibility: hidden;}
-      /* ページ全体の背景色 */
       body, .stApp {
         background-color: #eee !important;
       }
@@ -23,16 +20,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ③ フルスクリーン制御用のセッションステート
+# ③ フルスクリーン制御
 if "fullscreen" not in st.session_state:
     st.session_state.fullscreen = False
 
-# ④ フルスクリーンボタン（押されたら状態をセット）
 if not st.session_state.fullscreen:
     if st.button("Fullscreen"):
         st.session_state.fullscreen = True
 
-# ⑤ フルスクリーン処理（状態が True なら JS で切り替え）
 if st.session_state.fullscreen:
     st.markdown(
         """
@@ -43,10 +38,17 @@ if st.session_state.fullscreen:
         unsafe_allow_html=True,
     )
 
-# ⑥ 1 分ごとに自動更新
-_ = st_autorefresh(interval=60_000, key="clock_refresh")
+# ④ JS で 60秒後にページをリロード
+st.markdown(
+    """
+    <script>
+      setTimeout(() => { window.location.reload(); }, 60000);
+    </script>
+    """,
+    unsafe_allow_html=True,
+)
 
-# ⑦ デジタル時計描画（フォントサイズを60pxに）
+# ⑤ 時計表示（フォントサイズ60px）
 now = datetime.now().strftime("%H:%M")
 st.markdown(
     f"""
@@ -57,10 +59,9 @@ st.markdown(
         height: 100vh;
         margin: 0;
     ">
-      <span style="
-        font-size: 60px;
-        color: #111;
-      ">{now}</span>
+      <span style="font-size:60px; color:#111;">
+        {now}
+      </span>
     </div>
     """,
     unsafe_allow_html=True,
