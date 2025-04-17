@@ -13,7 +13,7 @@ st.set_page_config(page_title="Clock & Timer Suite", layout="wide")
 # 2. 自動リフレッシュ（1秒ごとに再実行）
 _ = st_autorefresh(interval=1_000, key="refresh")
 
-# 3. 共通 CSS：UI 非表示＋背景色＋配置
+# 3. 共通 CSS：UI 非表示＋背景色＋配置＋タブアクティブ調整
 st.markdown(
     """
     <style>
@@ -25,6 +25,17 @@ st.markdown(
         background-color: #eee !important;
         margin: 0; padding: 0;
         width: 100vw; height: 100vh; overflow: hidden;
+      }
+
+      /* tab-list 内のタブラベル表示 */
+      [data-baseweb="tab-list"] [role="tab"] > div:first-child {
+        color: inherit;
+        font-weight: normal;
+      }
+      /* アクティブタブの文字色を黒・太字に */
+      [data-baseweb="tab-list"] [role="tab"][aria-selected="true"] > div:first-child {
+        color: #000 !important;
+        font-weight: 700 !important;
       }
 
       /* 時計表示：固定配置で縦中央・横は右1/3 */
@@ -40,7 +51,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 4. 通知用スクリプト（画面フラッシュ + ビープ音）
+# 4. 終了通知用スクリプト（画面フラッシュ + ビープ音）
 flash_and_beep = """
 <script>
   document.body.style.backgroundColor = "#fff";
@@ -169,12 +180,12 @@ with tabs[2]:
         else:
             disp = str(remaining).split(".")[0]
 
-        # ラベルと時間を分けて表示
+        # ラベルと時間を表示（ラベルは40pxに）
         label = "Work" if st.session_state.pomo_phase == "work" else "Break"
         st.markdown(
             f'''
             <div class="clock">
-              <span style="font-size:20px;">{label}</span>
+              <span style="font-size:40px;">{label}</span>
               <span style="font-size:120px; margin-left:10px;">{disp}</span>
             </div>
             ''',
